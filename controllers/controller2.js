@@ -1,190 +1,158 @@
-import Memo from '../models/memo.js'; // Sequelize Memo 모델
-import Comment from '../models/Comment.js'; // Sequelize Comment 모델
-import dayjs from 'dayjs'; // 날짜 포맷팅 라이브러리
+//controller2.js
+import { Op } from 'sequelize'; // 추가
+import User from '../models/user.js';
+import Memo from '../models/memo.js'; // Memo 모델 추가
+import Comment from '../models/Comment.js'; // Comment 모델 추가
 
-// 메모 추가하기
-const addMemo = async (req, res) => {
+const registerUser = async (req, res) => { //회원가입
   try {
-    const file = req.file;
+    const { email, password, nickname } = req.body;
+
+        // 중복 확인
+        const existingUser = await User.findOne({
+          where: { [Op.or]: [{ email }, { nickname }] },
+        });
+        if (existingUser) {
+          return res.status(400).json({ error: '이미 사용 중인 이메일 또는 닉네임입니다.' });
+        }
+    
+        // 공백 검증
+        if (!email.trim() || !nickname.trim()) {
+          return res.status(400).json({ error: '이메일과 닉네임을 입력해주세요.' });
+        }
+    
+        const file = req.file;
+        const userData = {
+          email,
+          password,
+          nickname,
+          img: file ? `/profile/${file.filename}` : null,
+        };
+
+    await User.create(userData);
+    res.redirect('/successful_signup');
+  } catch (err) {
+    console.error('회원 저장 중 오류 발생:', err);
+    res.status(500).json({ error: '회원 데이터를 저장하는 데 실패했습니다.' });
+  }
+};
+
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ where: { email, password } });
+    if (!user) {
+      return res.status(401).send('이메일 또는 비밀번호가 잘못되었습니다.');
+    }
+
+    req.session.user = {
+      email: user.email,
+      nickname: user.nickname,
+    };
+
+    res.redirect('/memo_list');
+  } catch (err) {
+    console.error('로그인 처리 중 오류 발생:', err);
+    res.status(500).json({ error: '로그인 처리에 실패했습니다.' });
+  }
+};
+
+const my_info = async (req, res) => {
+  try {
     if (!req.session.user) {
       return res.status(401).json({ error: '로그인이 필요합니다.' });
     }
 
-    const memoData = {
-      title: req.body.title,
-      context: req.body.context,
-      time: dayjs().format('YYYY-MM-DD HH:mm:ss'), // 포맷된 시간
-      username: req.session.user.nickname,
-      img: file ? `/uploads/${file.filename}` : null,
-      like: 0,
-      view: 0,
-      comments: 0,
-    };
+    const user = await User.findOne({ where: { email: req.session.user.email } });
+    if (!user) {
+      return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
+    }
 
-    const newMemo = await Memo.create(memoData);
-    res.redirect('/memo_list');
-  } catch (err) {
-    console.error('게시물 저장 중 오류 발생:', err);
-    res.status(500).json({ error: '게시물을 저장하는 데 실패했습니다.' });
-  }
-};
-
-// 메모 목록 조회
-const getMemoList = async (req, res) => {
-  try {
-    const memos = await Memo.findAll({
-      order: [['time', 'DESC']],
-      include: [Comment], // 댓글 포함
+    res.status(200).json({
+      email: user.email,
+      nickname: user.nickname,
+      img: user.img ? `/profile/${user.img}` : null,
     });
-    console.log(memos); // 반환되는 데이터 확인
-
-    // time 필드 포맷 적용
-    const formattedMemos = memos.map((memo) => ({
-      ...memo.toJSON(),
-      time: dayjs(memo.time).format('YYYY-MM-DD HH:mm:ss'), // 포맷 적용
-    }));
-
-    res.status(200).json(formattedMemos);
   } catch (err) {
-    console.error('메모 목록 조회 중 오류 발생:', err);
-    res.status(500).json({ error: '메모 데이터를 가져오는 데 실패했습니다.' });
+    console.error('사용자 정보 조회 중 오류 발생:', err);
+    res.status(500).json({ error: '사용자 정보를 가져오는 데 실패했습니다.' });
   }
 };
 
-// 메모 상세 조회
-const look_selected_memo = async (req, res) => {
-  const { id } = req.query;
-  if (!id) {
-    return res.status(400).json({ error: '유효한 게시물 ID가 필요합니다.' });
-  }
-
+const updatePw = async (req, res) => {
   try {
-    const memo = await Memo.findOne({
-      where: { id },
-      include: [
-        {
-          model: Comment,
-          attributes: ['id', 'text', 'username', 'createdAt'],
-          order: [['createdAt', 'DESC']], // 최신 댓글 먼저
-        },
-      ],
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
+    }
+
+    await user.update({ password });
+    res.status(200).json({ message: '비밀번호가 성공적으로 수정되었습니다.' });
+  } catch (err) {
+    console.error('비밀번호 수정 중 오류 발생:', err);
+    res.status(500).json({ error: '비밀번호를 수정하는 데 실패했습니다.' });
+  }
+};
+
+
+const look_my_info = async (req, res) => {
+  try {
+    const { nickname } = req.body;
+    const img = req.file ? req.file.filename : null;
+
+    const user = await User.findOne({ where: { email: req.session.user.email } });
+    if (!user) {
+      return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
+    }
+
+    // 닉네임 변경 시 게시글 및 댓글 업데이트
+    if (nickname && nickname !== user.nickname) {
+      await Memo.update({ username: nickname }, { where: { username: user.nickname } });
+      await Comment.update({ username: nickname }, { where: { username: user.nickname } });
+    }
+
+    // 사용자 정보 업데이트
+    await user.update({ nickname: nickname || user.nickname, img: img || user.img });
+
+    // 세션 업데이트
+    req.session.user.nickname = nickname || req.session.user.nickname;
+    req.session.user.img = img ? `/profile/${img}` : req.session.user.img;
+
+    res.status(200).json({
+      message: '정보 수정 성공',
+      nickname: user.nickname,
+      img: img ? `/profile/${img}` : `/profile/${user.img}`,
     });
-
-    if (!memo) {
-      return res.status(404).json({ error: '게시물을 찾을 수 없습니다.' });
-    }
-//댓글 수 계산
-    const commentCount = memo.Comments ? memo.Comments.length : 0;
-
-    const formattedMemo = {
-      ...memo.toJSON(), // Sequelize 모델을 JSON 객체로 변환
-      comments: memo.Comments || [], // 댓글 데이터 포함
-      commentCount,
-      time: dayjs(memo.time).format('YYYY-MM-DD HH:mm:ss'), // 포맷 적용
-    };
-
-
-    res.status(200).json(formattedMemo);
   } catch (err) {
-    console.error('메모 상세보기 중 오류 발생:', err);
-    res.status(500).json({ error: '메모 데이터를 가져오는 데 실패했습니다.' });
-  }
-};
-
-// Sequelize Memo 모델 주석추가
-
-// 게시물 수정 데이터 로드 및 작성자 확인
-const getMemoForEdit = async (req, res) => {
-  try {
-    const { id } = req.query;
-
-    if (!id) {
-      return res.status(400).json({ error: '게시물 ID가 필요합니다.' });
-    }
-
-    // 댓글은 제외하고 게시물 데이터만 가져오기
-    const memo = await Memo.findOne({
-      where: { id: Number(id) },
-      attributes: ['id', 'title', 'context', 'time', 'username', 'img'], // 필요한 필드만 가져옴
-    });
-
-    if (!memo) {
-      return res.status(404).json({ error: '해당 게시물을 찾을 수 없습니다.' });
-    }
-
-    res.status(200).json({ memo });
-  } catch (err) {
-    console.error('게시물 불러오기 중 오류 발생:', err);
-    res.status(500).json({ error: '게시물을 불러오는 데 실패했습니다.' });
+    console.error('정보 수정 중 오류 발생:', err);
+    res.status(500).json({ error: '정보 수정에 실패했습니다.' });
   }
 };
 
 
-
-
-// 메모 수정
-const updateMemo = async (req, res) => {
+const delete_user = async (req, res) => {
   try {
-    const { id, title, context } = req.body;
+    const { email } = req.body;
+    const user = await User.findOne({ where: { email } });
 
-    console.log('req.body:', req.body); // 요청 데이터
-    console.log('req.file:', req.file); // 업로드된 파일 정보
-
-
-    if (!id) {
-      return res.status(400).json({ error: '게시물 ID가 필요합니다.' });
+    if (!user) {
+      return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
     }
 
-    const memo = await Memo.findOne({ where: { id: Number(id) } });
-    if (!memo) {
-      return res.status(404).json({ error: '수정하려는 게시물을 찾을 수 없습니다.' });
-    }
-
-    // 작성자 확인
-    if (memo.username !== req.session.user.nickname) {
-      return res.status(403).json({ error: '수정 권한이 없습니다.' });
-    }
-
-    // 업데이트할 필드만 조건적으로 설정
-    const updatedFields = { title, context };
-      if (req.file) {
-         updatedFields.img = `/uploads/${req.file.filename}`;
+    await user.destroy();
+    req.session.destroy(err => {
+      if (err) {
+        return res.status(500).send('세션 종료 중 오류 발생');
       }
-
-    await memo.update({ ...updatedFields, time: new Date() });
-    res.status(200).json({ message: '게시물이 성공적으로 수정되었습니다.', memo });
+      res.status(200).json({ message: '회원 탈퇴가 완료되었습니다.' });
+    });
   } catch (err) {
-    console.error('게시물 수정 중 오류 발생:', err);
-    res.status(500).json({ error: '게시물을 수정하는 데 실패했습니다.' });
+    console.error('회원 탈퇴 중 오류 발생:', err);
+    res.status(500).json({ error: '회원 탈퇴에 실패했습니다.' });
   }
-};
+}
 
-// 메모 삭제
-const delete_memo = async (req, res) => {
-  try {
-    const { id } = req.body;
-
-    if (!id) {
-      return res.status(400).json({ error: '게시물 ID가 필요합니다.' });
-    }
-
-    const memo = await Memo.findOne({ where: { id: Number(id) } });
-
-    if (!memo) {
-      return res.status(404).json({ error: '메모를 찾을 수 없습니다.' });
-    }
-
-    // 작성자 확인
-    if (memo.username !== req.session.user.nickname) {
-      return res.status(403).json({ error: '삭제 권한이 없습니다.' });
-    }
-
-    await memo.destroy();
-    res.status(200).json({ message: '게시물이 성공적으로 삭제되었습니다.' });
-  } catch (err) {
-    console.error('메모 삭제 중 오류 발생:', err);
-    res.status(500).json({ error: '메모 삭제에 실패했습니다.' });
-  }
-};
-
-export { getMemoForEdit, addMemo, getMemoList, look_selected_memo, updateMemo, delete_memo };
+export { registerUser, loginUser, my_info, updatePw, look_my_info, delete_user };
