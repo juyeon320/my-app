@@ -52,3 +52,4 @@ sequelize
   .catch((err) => {
     console.error('Failed to synchronize database:', err);
   });
+//
