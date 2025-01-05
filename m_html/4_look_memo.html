@@ -64,6 +64,9 @@
     </section>
 
     <script>
+    let isEditMode = false; // 수정 모드 상태를 추적
+    let currentEditingCommentId = null; // 수정 중인 댓글 ID
+
 
     document.addEventListener("DOMContentLoaded", async () => {  
         const { id } = getQueryParams();
