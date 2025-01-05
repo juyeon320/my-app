@@ -209,7 +209,7 @@ const increaseViewCount = async (req, res) => {
   if (!id) {
       return res.status(400).json({ error: '게시물 ID가 필요합니다.' });
   }
-
+//
   try {
       const memo = await Memo.findByPk(id);
 
