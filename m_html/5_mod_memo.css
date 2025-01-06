@@ -8,7 +8,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #E0CFE3; /* 배경 색상 */
+  background-color: #ffffff; /* 배경 색상 */
   font-family: "Noto Sans KR", sans-serif;
   min-height: 100vh; /* 화면 전체 높이 */
 }
@@ -16,7 +16,7 @@ body {
 .wrap {
   width: 100%;
   max-width: 500px;
-  background-color: #E0CFE3;
+  background-color: #ffffff;
   padding: 20px;
   border-radius: 10px;
  
@@ -34,10 +34,22 @@ h1.name {
 }
 
 h1.name::before {
-  content: "⬅";
+  content: "<";
   margin-right: 10px;
   cursor: pointer;
 }
+
+h1.page_title {
+  font-family: "Montserrat", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 20px;
+  margin-left: 100px;
+  display: flex;
+  align-items: center;
+}
+
 
 /* 설명 텍스트 */
 .description {
@@ -53,10 +65,10 @@ textarea {
   width: 100%;
   padding: 10px;
   font-size: 14px;
-  border: 1px solid #CCCCCC;
+  border: 1px solid #ffffff;
   border-radius: 10px;
   box-sizing: border-box;
-  background-color: #E0CFE3;
+  background-color: #ffffff;
   margin-bottom: 20px;
   resize: none; /* textarea 크기 조정 비활성화 */
 }
@@ -81,26 +93,34 @@ input[type="file"] {
 }
 
 /* 수정 버튼 */
+
 .buttons {
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
 }
 
-.buttons .editButton {
-  background-color: #C9ADD4;
-  color: #FFFFFF;
+.button {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  width: 70%;
+  margin-top: 10%;
+  padding: 12px;
+  font-size: 16px;
   font-weight: bold;
-  text-align: center;
-  text-decoration: none;
-  padding: 10px 20px;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  color: white;
+  background-color: #9C6ADE;
 }
 
-.buttons .editButton:hover {
-  background-color: #B590C2;
+
+.buttons .button:hover {
+  background-color: #000000;
 }
 
 /* 반응형 */
@@ -130,6 +150,8 @@ textarea {
   resize: vertical; /* 내용이 길어지면 크기 조절 가능하게 */
   overflow: auto; /* 내용이 넘칠 때 스크롤 가능 */
 }
+
+/*여긴 드롭다운*/
 
 /* 드롭다운 컨테이너 */
 .dropdown {
