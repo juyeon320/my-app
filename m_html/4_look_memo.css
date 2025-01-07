@@ -5,7 +5,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #f1f1f1;
+    background-color: #ffffff;
     font-family: "Noto Sans KR", sans-serif;
     display: flex;
     justify-content: center;
@@ -13,10 +13,39 @@ body {
     min-height: 100vh;
 }
 
+h1.name {
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #333333;
+    margin-bottom: 20px;
+    justify-content: center; /* 가로 정렬 */
+    display: flex;
+    align-items: center;
+  }
+  
+  h1.name::before {
+    content: "<";
+    margin-right: 10px;
+    
+    cursor: pointer;
+  }
+  
+  h1.page_title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #333333;
+    margin-bottom: 20px;
+    margin-left: 200px;
+    display: flex;
+    align-items: center;
+  }
+
 .wrap {
     width: 100%;
     max-width: 500px;
-    background-color: #f1f1f1;
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 10px;
    
@@ -70,12 +99,12 @@ button.edit, button.delete {
     font-size: 12px;
     font-weight: 600;
     color: #333;
-    background-color: #f1f1f1;
+    background-color: #ffffff;
     cursor: pointer;
 }
 
 button.edit:hover, button.delete:hover {
-    background-color: #f1f1f1;
+    background-color: #ffffff;
 }
 
 /* 본문 내용 */
@@ -97,7 +126,7 @@ button.edit:hover, button.delete:hover {
 
 /* 댓글 섹션 */
 .comment-section {
-    background-color: #f1f1f1;
+    background-color: #ffffff;
     padding: 10px;
     border-radius: 10px;
 }
@@ -142,7 +171,7 @@ button.edit:hover, button.delete:hover {
 .comment_box {
     margin-top: 20px;
     padding: 10px;
-    background-color: #f1f1f1; 
+    background-color: #ffffff; 
     border-radius: 10px;
 }
 
@@ -154,7 +183,7 @@ button.edit:hover, button.delete:hover {
     padding: 15px;
     flex-direction: column;
     margin-bottom: 15px;
-    background-color: #f1f1f1;
+    background-color: #ffffff;
     border-radius: 10px;
     
 }
@@ -193,7 +222,7 @@ button.edit:hover, button.delete:hover {
 /* 댓글 작성 섹션 */
 .write_comment {
     margin-top: 20px;
-    background-color: #ffffff;
+    background-color: #ebebeb;
     padding: 15px;
     border-radius: 10px;
     display: flex;
@@ -262,7 +291,7 @@ menu {
     font-size: 12px;
     font-weight: 600;
     color: #333;
-    background-color: #f1f1f1;
+    background-color: #cdcdcd;
     cursor: pointer;
 }
 
@@ -270,7 +299,7 @@ menu {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f1f1f1;
+    background-color: #ffffff;
     border-radius: 10px;
     width: 100%;
     height: auto;
@@ -289,7 +318,7 @@ menu {
     justify-content: space-around;
     align-items: center;
     margin-bottom: 20px 0;
-    background-color: #f1f1f1;
+    background-color: #ffffff;
     border-radius: 10px;
     padding: 10px 0;
     font-weight: 600;

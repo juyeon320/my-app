@@ -25,10 +25,11 @@ body {
 /* 제목 스타일 */
 h1.name {
   font-family: "Montserrat", sans-serif;
-  font-size: 24px;
+  font-size: 15px;
   font-weight: 700;
   color: #333333;
   margin-bottom: 20px;
+  justify-content: center; /* 가로 정렬 */
   display: flex;
   align-items: center;
 }
@@ -36,6 +37,7 @@ h1.name {
 h1.name::before {
   content: "<";
   margin-right: 10px;
+  
   cursor: pointer;
 }
 
@@ -45,7 +47,7 @@ h1.page_title {
   font-weight: 700;
   color: #333333;
   margin-bottom: 20px;
-  margin-left: 100px;
+  margin-left: 200px;
   display: flex;
   align-items: center;
 }

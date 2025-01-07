@@ -9,13 +9,41 @@ body {
   font-family: "Noto Sans KR", sans-serif;
 }
 
+h1.name {
+  font-family: "Montserrat", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 20px;
+  justify-content: center; /* 가로 정렬 */
+  display: flex;
+  align-items: center;
+}
+
+h1.name::before {
+  content: "<";
+  margin-right: 10px;
+  
+  cursor: pointer;
+}
+
+h1.page_title {
+  font-family: "Montserrat", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 20px;
+  margin-left: 200px;
+  display: flex;
+  align-items: center;
+}
+
 .wrap {
   width: 100%;
   max-width: 500px;
   background-color: #ffffff;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .header {
@@ -68,21 +96,28 @@ form .description {
 
 /* 버튼 스타일 */
 form .button {
-  width: 100%;
-  max-width: 200px;
-  padding: 10px;
-  background-color: #C9ADD4;
-  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  width: 70%;
+  margin-top: 10%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
   border: none;
   border-radius: 8px;
-  font-weight: bold;
   cursor: pointer;
+  color: white;
+  background-color: #9C6ADE;
 }
 
 form .button:hover {
   background-color: #b396c1;
 }
 
+
+/*여긴 드롭다운*/
 /* 드롭다운 컨테이너 */
 .dropdown {
   position: absolute;

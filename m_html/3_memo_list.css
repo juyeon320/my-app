@@ -5,7 +5,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #E0CFE3;
+    background-color: #ffffff;
     font-family: "Noto Sans KR", sans-serif;
     display: flex;
     justify-content: center;
@@ -13,6 +13,34 @@ body {
     min-height: 100vh;
 }
 
+h1.name {
+    font-family: "Montserrat", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #333333;
+    margin-bottom: 20px;
+    justify-content: center; /* 가로 정렬 */
+    display: flex;
+    align-items: center;
+  }
+  
+  h1.name::before {
+    content: "<";
+    margin-right: 10px;
+    
+    cursor: pointer;
+  }
+  
+  h1.page_title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #333333;
+    margin-bottom: 20px;
+    margin-left: 200px;
+    display: flex;
+    align-items: center;
+  }
 .buttons {
     display: flex;
     justify-content: flex-end; /* 오른쪽 정렬 */
@@ -23,7 +51,7 @@ body {
     
     width: 100%;
     max-width: 500px;
-    background-color: #E0CFE3;
+    background-color: #ffffff;
     padding: 10px 20px;
     margin: 20px auto;
    
@@ -62,7 +90,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 10px;
-    background-color: #f9f9f9;
+    background-color: #e8e8e8;
     border-radius: 25px;
     margin-bottom: 20px;
     cursor: pointer; /* 마우스를 올렸을 때 손 모양 커서 표시 */
@@ -126,7 +154,7 @@ body {
     font-weight: 500;
 }
 
-
+/*여긴 드롭다운*/
 /* 드롭다운 컨테이너 */
 .dropdown {
     position: absolute;

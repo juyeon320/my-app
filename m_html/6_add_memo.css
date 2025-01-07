@@ -6,17 +6,46 @@ body {
   display: flex;
   justify-content: center;
   align-items: center; /* 수직 가운데 정렬 */
-  background-color: #EEE9EF;
+  background-color: #ffffff;
   font-family: "Noto Sans KR", sans-serif;
 }
 
 .wrap {
   width: 100%;
   max-width: 500px;
-  background-color: #E0CFE3;
+  background-color: #ffffff;
   padding: 20px;
   border-radius: 10px;
  
+}
+
+h1.name {
+  font-family: "Montserrat", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 20px;
+  justify-content: center; /* 가로 정렬 */
+  display: flex;
+  align-items: center;
+}
+
+h1.name::before {
+  content: "<";
+  margin-right: 10px;
+  
+  cursor: pointer;
+}
+
+h1.page_title {
+  font-family: "Montserrat", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 20px;
+  margin-left: 200px;
+  display: flex;
+  align-items: center;
 }
 
 menu {
@@ -26,38 +55,40 @@ menu {
   font-size: 12px;
   font-weight: 600;
   color: #333;
-  background-color: #f1f1f1;
+  background-color: #ffffff;
   cursor: pointer;
 }
 
 /* 버튼들 */
 .buttons {
-  padding: 40px 0;
   display: flex;
   flex-direction: column;
-  row-gap: 15px;
-  justify-content: center;
+  gap: 15px;
   align-items: center;
 }
 
-.buttons .button {
-  width: 100%;
-  height: 54px;
-
+.button {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 15px;
   align-items: center;
-  text-decoration: none;
-  color: #000000;
-  font-weight: 600;
+  width: 70%;
+  margin-top: 10%;
+  padding: 12px;
   font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+  background-color: #9C6ADE;
 }
 .profile {
     width: 100%;
     padding: 20px;
     justify-content: center;
     align-items: center;
-    background-color: #EEE9EF; /* 배경색 */
+    background-color: #ffffff; /* 배경색 */
   }
 
 
@@ -73,6 +104,8 @@ textarea {
   overflow: auto; /* 내용이 넘칠 때 스크롤 가능 */
 }
 
+
+/*여긴 드롭다운*/
 /* 드롭다운 컨테이너 */
 .dropdown {
   position: absolute;
