@@ -4,30 +4,48 @@ import User from '../models/user.js';
 import Memo from '../models/memo.js'; // Memo 모델 추가
 import Comment from '../models/Comment.js'; // Comment 모델 추가
 
+const validatePassword = (password) => {
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+  return passwordRegex.test(password);
+};
+
 const registerUser = async (req, res) => { //회원가입
   try {
     const { email, password, nickname } = req.body;
 
-        // 중복 확인
-        const existingUser = await User.findOne({
-          where: { [Op.or]: [{ email }, { nickname }] },
-        });
-        if (existingUser) {
-          return res.status(400).json({ error: '이미 사용 중인 이메일 또는 닉네임입니다.' });
+     // 비밀번호 조건 검증
+     if (!validatePassword(password)) {
+      return res
+        .status(400)
+        .json({ error: '비밀번호는 8~20자, 대문자/소문자/숫자/특수기호를 포함해야 합니다.' });
+    }
+
+    // 닉네임 길이 제한 검증
+    if (nickname.length > 10) {
+      return res.status(400).json({ error: '닉네임은 10자 이하로 작성해주세요.' });
+    }
+
+
+    // 중복 확인
+    const existingUser = await User.findOne({
+      where: { [Op.or]: [{ email }, { nickname }] },
+    });
+    if (existingUser) {
+      return res.status(400).json({ error: '이미 사용 중인 이메일 또는 닉네임입니다.' });
         }
     
-        // 공백 검증
-        if (!email.trim() || !nickname.trim()) {
-          return res.status(400).json({ error: '이메일과 닉네임을 입력해주세요.' });
-        }
+    // 공백 검증
+    if (!email.trim() || !nickname.trim()) {
+      return res.status(400).json({ error: '이메일과 닉네임을 입력해주세요.' })
+    }
     
-        const file = req.file;
-        const userData = {
-          email,
-          password,
-          nickname,
-          img: file ? `/profile/${file.filename}` : null,
-        };
+    const file = req.file;
+    const userData = {
+      email,
+      password,    
+      nickname,
+      img: file ? `/profile/${file.filename}` : null,
+    };
 
     await User.create(userData);
     res.redirect('/successful_signup');
@@ -40,6 +58,13 @@ const registerUser = async (req, res) => { //회원가입
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // 비밀번호 조건 검증
+    if (!validatePassword(password)) {
+      return res
+        .status(400)
+        .json({ error: '비밀번호는 8~20자, 대문자/소문자/숫자/특수기호를 포함해야 합니다.' });
+    }
 
     const user = await User.findOne({ where: { email, password } });
     if (!user) {

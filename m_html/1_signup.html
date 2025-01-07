@@ -3,31 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link rel="stylesheet" type="text/css" href="1_signup.css">
-    <title>sign_up</title>
+    <title>회원가입</title>
 </head>
 <body>
     <section class="wrap">
         <h1 class="name">회원가입</h1>
         <article class="profile">
             <form id="signup-form" method="POST" action="/signup">
-                <p class="description">이미지</p>
+                <!-- 프로필 사진 -->
+                <label class="profile-label" for="img">
+                    <span>프로필 사진</span>
+                </label>
                 <input type="file" id="img" name="img" accept="image/*">
-                <p class="description">email</p>
-                <input type="email" id="email" name="email" required>
-                <p class="description">비밀번호</p>
-                <input type="password" id="password" name="password" required>
-                <p class="description">비밀번호 확인</p>
-                <input type="password" id="pw2" name="pw2" required>
-                <p class="description">닉네임</p>
-                <input type="text" id="nickname" name="nickname" required>
-                <article class="buttons">
-                <button class="button" type="submit" class="button">회원가입 완료</button>
-                <a class="button" href="/2_login.html" target="_blank">로그인 하러 가기</a>
-                </article>
+                <p class="helper-text">* 프로필 사진을 추가해주세요.</p>
+
+                <!-- 이메일 -->
+                <label class="description" for="email">이메일</label>
+                <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required>
+                <p class="helper-text">* 올바른 이메일 주소를 입력해주세요. (예: example@example.com)</p>
+
+                <!-- 비밀번호 -->
+                <label class="description" for="password">비밀번호</label>
+                <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+                <p class="helper-text">* 비밀번호는 8자 이상, 대문자/소문자/숫자 포함</p>
+
+                <!-- 비밀번호 확인 -->
+                <label class="description" for="pw2">비밀번호 확인</label>
+                <input type="password" id="pw2" name="pw2" placeholder="비밀번호를 한 번 더 입력하세요" required>
+                <p class="helper-text">* 비밀번호가 일치하지 않습니다.</p>
+
+                <!-- 닉네임 -->
+                <label class="description" for="nickname">닉네임</label>
+                <input type="text" id="nickname" name="nickname" placeholder="닉네임을 입력하세요" required>
+                <p class="helper-text">* 닉네임은 10자 이내로 작성해주세요.</p>
+
+                <!-- 버튼 -->
+                <div class="buttons">
+                    <button class="button" type="submit">회원가입 완료</button>
+                    <a class="button" href="/2_login.html" target="_blank">로그인 하러 가기</a>
+                </div>
             </form>
         </article>
     </section>
 </body>
+<script>
+    const signupForm = document.getElementById('signup-form');
+  
+    signupForm.addEventListener('submit', (e) => {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('pw2').value;
+      const nickname = document.getElementById('nickname').value;
+  
+      // 비밀번호 검증
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+      if (!passwordRegex.test(password)) {
+        alert('비밀번호는 8~20자, 대문자/소문자/숫자/특수기호를 포함해야 합니다.');
+        e.preventDefault();
+        return;
+      }
+  
+      // 비밀번호 확인
+      if (password !== confirmPassword) {
+        alert('비밀번호가 일치하지 않습니다.');
+        e.preventDefault();
+        return;
+      }
+  
+      // 닉네임 길이 검증
+      if (nickname.length > 10) {
+        alert('닉네임은 10자 이하로 작성해주세요.');
+        e.preventDefault();
+        return;
+      }
+    });
+  </script>  
 </html>
