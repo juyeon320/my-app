@@ -5,57 +5,93 @@
 body {
   display: flex;
   justify-content: center;
-  align-items: center; /* 수직 가운데 정렬 */
+  align-items: center;
+  height: 100vh; /* 화면 전체 높이 */
+  margin: 0;
+  padding: 0;
   background-color: #ffffff;
   font-family: "Noto Sans KR", sans-serif;
+  box-sizing: border-box;
 }
 
 .wrap {
   display: flex;
   flex-direction: column;
-  width: 400%;
-  max-width: 400px;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
   background-color: #ffffff;
-  stroke: #050508;
-  stroke-width: 100%;
-  padding: 60px 0;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+/* 입력 필드 */
+input {
+  width: 100%;
+  height: 40px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding: 0 10px;
+  border: 2px solid #9094A6;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: "Noto Sans KR", sans-serif;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.helper-text {
+  color: red;
+  font-size: 12px;
+  margin-top: -15px;
+  margin-bottom: 10px;
+  text-align: left; /* 왼쪽 정렬 */
+  width: 100%;
 }
 
 /* 버튼들 */
 .buttons {
-  padding: 40px 0;
+  padding: 20px 0;
   display: flex;
   flex-direction: column;
-  row-gap: 20px;
+  row-gap: 10px;
   justify-content: center;
   align-items: center;
 }
 
 .buttons .button {
-  width: 200%;
-  height: 54px;
+  width: 100%;
+  max-width: 300px;
+  height: 50px;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  background-color: #C9ADD4;
-  border-radius: 10px;
-
+  background-color: #ACA0EB; /* 초기 색상 */
+  border: none;
+  border-radius: 8px;
   text-decoration: none;
   color: #ffffff;
   font-weight: 600;
   font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
+
+.buttons .button:hover {
+  background-color: #7F6AEE; /* 호버 색상 */
+}
+
 .profile {
-    width: 100%;
-    padding: 40px;
-    justify-content: center;
-    align-items: center;
-    border: 8px solid #9094A6; /* 테두리 색상 */
-    border-radius: 20px; /* 둥근 테두리 */
-    background-color: #ffffff; /* 배경색 */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* 그림자 */
-  }
+  width: 200%;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #9094A6; /* 테두리 색상 */
+  border-radius: 20px; /* 둥근 테두리 */
+  background-color: #ffffff; /* 배경색 */
+  box-sizing: border-box;
+}
