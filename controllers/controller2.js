@@ -48,7 +48,7 @@ const registerUser = async (req, res) => { //회원가입
     };
 
     await User.create(userData);
-    res.redirect('/successful_signup');
+    res.redirect('/login');
   } catch (err) {
     console.error('회원 저장 중 오류 발생:', err);
     res.status(500).json({ error: '회원 데이터를 저장하는 데 실패했습니다.' });

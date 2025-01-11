@@ -17,7 +17,7 @@
             </button>
             <div class="dropdown-content">
                 <button class="menu" id="mod_my_btn">회원정보 수정</button>
-                <button class="menu" id="mod_pw_btn">비밀번호 수정</button>
+                <button class="menu" id="mod_pw">비밀번호 수정</button>
                 <button class="menu" id="log_out_btn">로그아웃</button>
             </div>
         </div>
@@ -136,6 +136,15 @@
         document.getElementById("log_out_btn").addEventListener("click", () => {
             window.location.href = "/login";
         });
+
+         //비밀번호 변경 버튼 클릭
+        document.getElementById('mod_pw').addEventListener('click', () => {
+            window.location.href = '/mod_pw';
+        });
+
+   
+
+
 
         // 회원탈퇴
         document.getElementById("delete-btn").addEventListener("click", async () => {

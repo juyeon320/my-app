@@ -69,9 +69,27 @@
     let isEditMode = false; // 수정 모드 상태를 추적
     let currentEditingCommentId = null; // 수정 중인 댓글 ID
 
+     // 내 정보 보기 버튼 클릭
+     document.getElementById('mod_my_btn').addEventListener('click', () => {
+            window.location.href = '/my_info';
+    });
+
+    // 게시물 작성 페이지 이동
+    document.getElementById('write_memo').addEventListener('click', () => {
+            window.location.href = '/add_memo';
+    });
+
+        // 로그아웃 버튼 클릭
+    document.getElementById('log_out_btn').addEventListener('click', () => {
+            window.location.href = '/login';
+    });
+
 
     document.addEventListener("DOMContentLoaded", async () => {  
         const { id } = getQueryParams();
+
+        const editButton = document.getElementById("edit-memo"); // 수정 버튼
+        const deleteButton = document.getElementById("delete-memo"); // 삭제 버튼
         
         await increaseViewCount(id); // 조회수 증가
         await renderMemoDetail();    // 게시물 데이터 렌더링
@@ -89,8 +107,7 @@
         const likeCountSpan = document.getElementById("like-count"); //좋아요수 
         const viewCountSpan = document.getElementById("view-count");// 조회수 
         const commentCountSpan = document.getElementById("comment-count"); //댓글 수
-        const editButton = document.getElementById("edit-memo"); //메모 수정하기
-        const deleteButton = document.getElementById("delete-memo"); //메모 삭제하기
+        
 
         let hasLiked = false; // 좋아요 상태
 
