@@ -12,4 +12,4 @@ sequelize
   .catch((err) => console.error('Unable to connect to the database:', err));
 
 export default sequelize;
-//재도전
+//재도전//

@@ -117,7 +117,7 @@ router.patch('/mod_pw', updatePw);
 
 //////////회원탈퇴///////////
 router.delete('/delete_user', isAuthenticated, delete_user);
-
+////조ㅎ아요
 router.post('/like_memo', isAuthenticated, likeMemo);
 
 /////조회수 /////
