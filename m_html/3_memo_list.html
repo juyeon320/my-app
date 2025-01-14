@@ -12,9 +12,9 @@
         <hr class="horizontal-rule"/>
         <h1 class="page_title">게시글 보기</h1>
         <div class="dropdown">
-            <button class="dropbtn"> 
-                <span 
-                class="dropbtn_icon">profile-pic</span>
+            
+            <button class="dropbtn" id="profile-button"> 
+                <img id="profile-img" src="/profile/default.png" alt="Profile" />
             </button>
             <div class="dropdown-content">
                 <button class="menu" id="log_out_btn">로그아웃</button>
@@ -115,6 +115,21 @@
                 isLoading = false; // 로딩 상태 해제
             }
         });
+
+        async function setProfileImage() {
+            try {
+                const response = await fetch('/api/my_info');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user info');
+                }
+
+                const { profileImg } = await response.json();
+                const profileImgElement = document.getElementById('profile-img');
+                profileImgElement.src = profileImg; // 프로필 이미지 URL 설정
+            } catch (error) {
+                console.error('프로필 이미지를 설정하는 중 오류 발생:', error);
+            }
+        }
 
         // 페이지 로드 시 메모 목록을 가져와 렌더링
         document.addEventListener('DOMContentLoaded', fetchMemos);
