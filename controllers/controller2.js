@@ -82,7 +82,7 @@ const loginUser = async (req, res) => {
     res.status(500).json({ error: '로그인 처리에 실패했습니다.' });
   }
 };
-
+//
 const my_info = async (req, res) => {
   try {
     if (!req.session.user) {
