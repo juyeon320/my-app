@@ -89,7 +89,7 @@
         await increaseViewCount(id); // 조회수 증가
         await renderMemoDetail();    // 게시물 데이터 렌더링
 
-        const response = await fetch(`/api/look_memo?id=48`);
+        const response = await fetch(`/api/look_memo?id=${id}`);
         if (!response.ok) throw new Error("Failed to fetch memo");
 
         const memo = await response.json(); // memo 정의
