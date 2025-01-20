@@ -22,6 +22,47 @@
             </article>
         </form>
         <a class="button" href="/1_signup.html">회원가입</a>
+        <!-- 모달 공통 구조 -->
+        <div id="login-error-modal" class="modal hidden">
+            <div class="modal-content">
+                <p id="modal-message">로그인 실패: 메시지가 여기에 표시됩니다.</p>
+                <div class="modal-buttons">
+                    <button id="close-modal" class="modal-button modal-cancel">닫기</button>
+                </div>
+            </div>
+        </div>
     </section>
+    <script>
+        document.getElementById("login-form").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password }),
+                    credentials: 'include', // 쿠키 포함
+                });
+
+                if (!response.ok) {
+                    const errorMessage = await response.json().catch(() => "로그인 실패. 이메일 또는 비밀번호를 확인하세요.");
+                    document.getElementById("modal-message").textContent = errorMessage.error || errorMessage;
+                    document.getElementById("login-error-modal").classList.remove("hidden");
+                    return;
+                }
+
+                window.location.href = "/memo_list";
+            } catch (err) {
+                console.error("로그인 처리 중 오류 발생:", err);
+                document.getElementById("modal-message").textContent = "로그인 요청 처리 중 오류가 발생했습니다.";
+                document.getElementById("login-error-modal").classList.remove("hidden");
+            }
+        });
+        document.getElementById("close-modal").addEventListener("click", () => {
+            document.getElementById("login-error-modal").classList.add("hidden");
+        });
+    </script>
 </body>
 </html>

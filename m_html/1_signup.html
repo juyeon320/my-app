@@ -13,7 +13,7 @@
             <form id="signup-form" method="POST" action="/signup">
                 <!-- 프로필 사진 -->
                 <label class="profile-label" for="img">
-                    <span>프로필 사진</span>
+                  <div id="profile-preview" class="profile-preview">프로필 사진</div>
                 </label>
                 <input type="file" id="img" name="img" accept="image/*">
                 <p class="helper-text">* 프로필 사진을 추가해주세요.</p>
@@ -49,6 +49,24 @@
 </body>
 <script>
     const signupForm = document.getElementById('signup-form');
+    // 프로필 사진 미리보기
+    const imgInput = document.getElementById("img");
+    const profilePreview = document.getElementById("profile-preview");
+
+    imgInput.addEventListener("change", function () {
+      const file = imgInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            profilePreview.style.backgroundImage = `url(${e.target.result})`;
+            profilePreview.textContent = ""; // 텍스트 제거
+        };
+        reader.readAsDataURL(file);
+    } else {
+        profilePreview.style.backgroundImage = "none";
+        profilePreview.textContent = "프로필 사진"; // 기본 텍스트 복원
+    }
+});
   
     signupForm.addEventListener('submit', (e) => {
       const password = document.getElementById('password').value;

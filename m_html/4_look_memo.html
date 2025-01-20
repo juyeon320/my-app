@@ -12,8 +12,8 @@
         <hr class="horizontal-rule"/>
         <h1 class="page_title">게시글 보기</h1>
         <div class="dropdown">
-            <button class="dropbtn"> 
-                <span class="dropbtn_icon">profile-pic</span>
+            <button class="dropbtn" id="profile-button"> 
+                <img id="profile-img" src="/profile/default.jpg" alt="Profile" />
             </button>
             <div class="dropdown-content">
                 <button class="menu" id="log_out_btn">로그아웃</button>
@@ -26,6 +26,18 @@
             <button id="edit-memo" class="edit">수정</button>
             <button id="delete-memo" class="delete">삭제</button>
         </div>
+
+        <!-- 모달 공통 구조 -->
+        <div id="delete-modal" class="modal hidden">
+            <div class="modal-content">
+                <p>게시글을 삭제하시겠습니까?<br>삭제한 내용은 복구할 수 없습니다.</p>
+                <div class="modal-buttons">
+                    <button id="cancel-button" class="modal-button modal-cancel">취소</button>
+                    <button id="confirm-button" class="modal-button modal-confirm">확인</button>
+                </div>
+            </div>
+        </div>
+
 
         <!-- 게시물 본문 -->
         <article class="post">
@@ -63,11 +75,42 @@
         <article class="comment_box" id="comment-box">
             <!-- 댓글이 동적으로 추가됩니다 -->
         </article>
+
+        <!-- 댓글 삭제 모달 -->
+        <div id="comment-delete-modal" class="modal hidden">
+            <div class="modal-content">
+                <p>댓글을 삭제하시겠습니까?<br>삭제한 내용은 복구할 수 없습니다.</p>
+                <div class="modal-buttons">
+                    <button id="cancel-comment-delete" class="modal-button modal-cancel">취소</button>
+                    <button id="confirm-comment-delete" class="modal-button modal-confirm">확인</button>
+                </div>
+            </div>
+        </div>
     </section>
 
     <script>
     let isEditMode = false; // 수정 모드 상태를 추적
     let currentEditingCommentId = null; // 수정 중인 댓글 ID
+
+
+    async function loadProfileImage() {
+            try {
+                const response = await fetch('/api/check_session');
+                if (!response.ok) {
+                    throw new Error('세션 정보를 가져올 수 없습니다.');
+                }
+                const { user } = await response.json();
+                const profileImgElement = document.getElementById('profile-img');
+                if (profileImgElement) {
+                    profileImgElement.src = user.profileImage || '/profile/default.jpg'; // 프로필 이미지 설정
+                }
+            } catch (error) {
+                console.error('프로필 이미지 로드 중 오류 발생:', error);
+            }
+        }
+
+        // 페이지 로드 시 호출
+        document.addEventListener('DOMContentLoaded', loadProfileImage);
 
      // 내 정보 보기 버튼 클릭
      document.getElementById('mod_my_btn').addEventListener('click', () => {
@@ -83,12 +126,28 @@
             window.location.href = '/login';
     });
 
+    const deleteModal = document.getElementById("delete-modal");
+    const cancelButton = document.getElementById("cancel-button");
+    const confirmButton = document.getElementById("confirm-button");
+    const deleteButton = document.getElementById("delete-memo");
+    // 삭제 버튼 클릭 시 모달 열기
+    deleteButton.addEventListener("click", () => {
+        deleteModal.classList.remove("hidden");
+        deleteModal.classList.add("visible");
+    });
+
+    // 취소 버튼 클릭 시 모달 닫기
+    cancelButton.addEventListener("click", () => {
+        deleteModal.classList.remove("visible");
+        deleteModal.classList.add("hidden");
+    });
+
 
     document.addEventListener("DOMContentLoaded", async () => {  
         const { id } = getQueryParams();
 
         const editButton = document.getElementById("edit-memo"); // 수정 버튼
-        const deleteButton = document.getElementById("delete-memo"); // 삭제 버튼
+        //const deleteButton = document.getElementById("delete-memo"); // 삭제 버튼
         
         await increaseViewCount(id); // 조회수 증가
         await renderMemoDetail();    // 게시물 데이터 렌더링
@@ -122,7 +181,7 @@
         }
 
         // 게시물 삭제 버튼 클릭 이벤트
-        if (deleteButton) {
+        /*if (deleteButton) {
             deleteButton.addEventListener("click", async () => {
                 const { id } = getQueryParams();
 
@@ -146,7 +205,34 @@
                     console.error("게시물 삭제 오류:", err);
                 }
             });
-        }
+        }*/
+        // 확인 버튼 클릭 시 삭제 요청
+        confirmButton.addEventListener("click", async () => {
+            const { id } = getQueryParams(); // URL에서 게시물 ID 가져오기
+
+            try {
+                const response = await fetch(`/delete_memo`, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id }),
+                });
+
+                if (!response.ok) {
+                    throw new Error("게시물 삭제 실패");
+                }
+
+                alert("게시물이 삭제되었습니다.");
+                window.location.href = "/memo_list"; // 삭제 후 게시물 목록으로 이동
+            } catch (err) {
+                console.error("게시물 삭제 중 오류 발생:", err);
+                alert("게시물 삭제 중 오류가 발생했습니다.");
+            } finally {
+                // 모달 닫기
+                deleteModal.classList.remove("visible");
+                deleteModal.classList.add("hidden");
+            }
+        });
+
     
         
 
@@ -205,9 +291,6 @@
         const { id } = getQueryParams();
 
         try {
-
-            //await fetch(`/increase_view?id=${encodeURIComponent(id)}`);
-
             const response = await fetch(`/api/look_memo?id=${encodeURIComponent(id)}`);
             if (!response.ok) throw new Error("게시물 로딩 실패");
 
@@ -248,6 +331,10 @@
             alert("게시물을 불러오지 못했습니다.");
         }
     }
+
+
+
+    
 
     ///조회수 증가////
     async function increaseViewCount(id) {
@@ -306,19 +393,31 @@
         console.error("댓글 처리 오류:", err);
     }
 }
+
     // 댓글 렌더링 함수
     async function renderComments(comments) {
+        let session = null;
+        try {
+            // 세션 정보 가져오기
+            session = await fetch('/api/check_session')
+                .then((res) => res.json())
+                .catch(() => null); // 실패 시 null 처리
+        } catch (err) {
+            console.error("세션 정보를 가져오는 중 오류 발생:", err);
+        }
         const commentBox = document.getElementById("comment-box");
         commentBox.innerHTML = ""; // 기존 댓글 초기화
 
         comments.forEach((comment) => {
+            const isOwner = session?.user?.nickname === comment.username;
             const commentDiv = document.createElement("div");
             commentDiv.classList.add("comment");
             commentDiv.innerHTML = `
-                <p><strong>${comment.username}</strong>: ${comment.text}</p>
+                <p><strong>${comment.username}</strong>: ${comment.text.replace(/\n/g, '<br>')}</p>
                 <small>${new Date(comment.createdAt).toLocaleString()}</small>
+                ${isOwner ? `
                 <button class="edit-comment" data-id="${comment.id}" data-text="${comment.text}">수정</button>
-                <button class="delete-comment" data-id="${comment.id}">삭제</button>
+                <button class="delete-comment" data-id="${comment.id}">삭제</button>` : ''}
             `;
             commentBox.appendChild(commentDiv);
         });
@@ -354,6 +453,7 @@ async function handleEditComment(event) {
     isEditMode = true; // 수정 모드 활성화
 }
 
+/*
 // 댓글 삭제 핸들러
 async function handleDeleteComment(event) {
     const commentId = event.target.dataset.id;
@@ -375,9 +475,60 @@ async function handleDeleteComment(event) {
     } catch (err) {
         console.error("댓글 삭제 오류:", err);
     }
-}
-    
+}*/
 
+
+    // 댓글 삭제 모달 관련 요소
+    const commentDeleteModal = document.getElementById("comment-delete-modal");
+    const cancelCommentDeleteButton = document.getElementById("cancel-comment-delete");
+    const confirmCommentDeleteButton = document.getElementById("confirm-comment-delete");
+    let currentCommentIdToDelete = null; // 현재 삭제할 댓글 ID 저장
+
+    // 댓글 삭제 버튼 클릭 이벤트 핸들러
+    async function handleDeleteComment(event) {
+        currentCommentIdToDelete = event.target.dataset.id; // 삭제할 댓글 ID 저장
+        commentDeleteModal.classList.remove("hidden"); // 모달 열기
+        commentDeleteModal.classList.add("visible");
+    }
+
+    // 모달에서 취소 버튼 클릭 시
+    cancelCommentDeleteButton.addEventListener("click", () => {
+        commentDeleteModal.classList.remove("visible");
+        commentDeleteModal.classList.add("hidden");
+        currentCommentIdToDelete = null; // 저장된 댓글 ID 초기화
+    });
+
+    // 모달에서 확인 버튼 클릭 시 댓글 삭제 진행
+    confirmCommentDeleteButton.addEventListener("click", async () => {
+        if (!currentCommentIdToDelete) return; // 삭제할 댓글 ID가 없으면 종료
+
+        try {
+            const { id: memoId } = getQueryParams(); // URL에서 게시물 ID 가져오기
+
+            const response = await fetch("/delete_comment", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ commentId: currentCommentIdToDelete, memoId }),
+            });
+
+            if (response.ok) {
+                const { comments } = await response.json();
+                renderComments(comments); // 댓글 목록 렌더링
+            } else {
+                alert("댓글 삭제 실패");
+            }
+        } catch (err) {
+            console.error("댓글 삭제 오류:", err);
+            alert("댓글 삭제 중 오류가 발생했습니다.");
+        } finally {
+            // 모달 닫기 및 초기화
+            commentDeleteModal.classList.remove("visible");
+            commentDeleteModal.classList.add("hidden");
+            currentCommentIdToDelete = null;
+        }
+    });
+
+    
     // URL 파라미터 추출
     function getQueryParams() {
         const params = new URLSearchParams(window.location.search);

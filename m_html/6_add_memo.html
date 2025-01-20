@@ -57,7 +57,32 @@
         } else {
             memoImgElement.src = '/uploads/default-memo.jpeg'; // 기본 게시물 사진
         }
-        
+        // 폼 제출 시 공백 및 유효한 문자 입력 검증
+        document.getElementById('memo-form').addEventListener('submit', (event) => {
+            const title = document.getElementById('title').value.trim();
+            const context = document.getElementById('context').value.trim();
+
+            // 제목과 내용 모두 비었거나 공백인 경우
+            if (!/[^\s]/.test(title) && !/[^\s]/.test(context)) {
+                alert('제목과 내용을 반드시 입력해주세요.');
+                event.preventDefault();
+                return;
+            }
+
+            // 제목만 비었거나 공백인 경우
+            if (!/[^\s]/.test(title)) {
+                alert('제목을 반드시 입력해주세요.');
+                event.preventDefault();
+                return;
+            }
+
+            // 내용만 비었거나 공백인 경우
+            if (!/[^\s]/.test(context)) {
+                alert('내용을 반드시 입력해주세요.');
+                event.preventDefault();
+                return;
+            }
+        });
     </script>
 </body>
 </html>

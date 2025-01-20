@@ -14,7 +14,7 @@
         <div class="dropdown">
             
             <button class="dropbtn" id="profile-button"> 
-                <img id="profile-img" src="/profile/default.png" alt="Profile" />
+                <img id="profile-img" src="/profile/default.jpg" alt="Profile" />
             </button>
             <div class="dropdown-content">
                 <button class="menu" id="log_out_btn">로그아웃</button>
@@ -45,6 +45,28 @@
         document.getElementById('log_out_btn').addEventListener('click', () => {
             window.location.href = '/login';
         });
+
+
+        // 프로필 이미지 설정
+        // profile-dropdown.js
+        async function loadProfileImage() {
+            try {
+                const response = await fetch('/api/check_session');
+                if (!response.ok) {
+                    throw new Error('세션 정보를 가져올 수 없습니다.');
+                }
+                const { user } = await response.json();
+                const profileImgElement = document.getElementById('profile-img');
+                if (profileImgElement) {
+                    profileImgElement.src = user.profileImage || '/profile/default.jpg'; // 프로필 이미지 설정
+                }
+            } catch (error) {
+                console.error('프로필 이미지 로드 중 오류 발생:', error);
+            }
+        }
+
+        // 페이지 로드 시 호출
+        document.addEventListener('DOMContentLoaded', loadProfileImage);
 
         // 서버에서 메모 데이터를 가져와 HTML에 추가하는 함수
         async function fetchMemos() {
@@ -92,17 +114,6 @@
 
                 memoList.appendChild(article);
             });
-        }
-
-        async function fetchMemos(page = 1) {
-            try {
-                const response = await fetch(`/api/memo_list?page=${page}`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const memos = await response.json();
-                renderMemoList(memos);
-            } catch (error) {
-                console.error('메모를 가져오는 중 오류 발생:', error);
-            }
         }
 
         let currentPage = 1;

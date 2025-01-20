@@ -42,6 +42,19 @@
             <button class="button edit" id="update-btn">수정하기</button>
             <button class="button delete" id="delete-btn">회원탈퇴</button>
         </div>
+
+
+       <!-- 회원 탈퇴 모달 -->
+        <div id="delete-user-modal" class="modal hidden">
+            <div class="modal-content">
+                <p>정말 탈퇴를 진행하시겠습니까?<br>탈퇴한 정보는 복구할 수 없습니다.</p>
+                <div class="modal-buttons">
+                    <button id="cancel-delete-user" class="modal-button modal-cancel">취소</button>
+                    <button id="confirm-delete-user" class="modal-button modal-confirm">확인</button>
+                </div>
+            </div>
+        </div>
+
     </section>
 
     <script>
@@ -56,7 +69,10 @@
         // 사용자 정보 로드
         async function loadUserInfo() {
             try {
-                const response = await fetch('/api/my_info');
+                const response = await fetch('/api/my_info',{
+                    method: 'GET',
+                    credentials: 'include', // 쿠키를 포함하여 요청
+                });
                 if (!response.ok) {
                     alert('로그인이 필요합니다.');
                     window.location.href = '/login';
@@ -153,7 +169,7 @@
 
 
         // 회원탈퇴
-        document.getElementById("delete-btn").addEventListener("click", async () => {
+        /*document.getElementById("delete-btn").addEventListener("click", async () => {
             if (!confirm("정말 회원탈퇴를 진행하시겠습니까?")) return;
 
             try {
@@ -165,7 +181,45 @@
             } catch (err) {
                 console.error("회원탈퇴 중 오류 발생:", err);
             }
+        });*/
+
+        // 회원 탈퇴 모달 관련 요소
+        const deleteUserModal = document.getElementById("delete-user-modal");
+        const cancelDeleteUserButton = document.getElementById("cancel-delete-user");
+        const confirmDeleteUserButton = document.getElementById("confirm-delete-user");
+        const deleteUserButton = document.getElementById("delete-btn");
+
+        // 회원 탈퇴 버튼 클릭 시 모달 열기
+        deleteUserButton.addEventListener("click", () => {
+            deleteUserModal.classList.remove("hidden");
+            deleteUserModal.classList.add("visible");
         });
+
+        // 모달에서 취소 버튼 클릭 시 모달 닫기
+        cancelDeleteUserButton.addEventListener("click", () => {
+            deleteUserModal.classList.remove("visible");
+            deleteUserModal.classList.add("hidden");
+        });
+
+        // 모달에서 확인 버튼 클릭 시 회원 탈퇴 진행
+        confirmDeleteUserButton.addEventListener("click", async () => {
+            try {
+                const response = await fetch("/delete_user", { method: "DELETE" });
+
+                if (!response.ok) throw new Error("회원탈퇴 실패");
+
+                alert("회원탈퇴가 완료되었습니다.");
+                window.location.href = "/login"; // 탈퇴 후 로그인 페이지로 이동
+            } catch (err) {
+                console.error("회원탈퇴 중 오류 발생:", err);
+                alert("회원탈퇴 중 오류가 발생했습니다.");
+            } finally {
+                // 모달 닫기
+                deleteUserModal.classList.remove("visible");
+                deleteUserModal.classList.add("hidden");
+            }
+        });
+
 
     </script>
 </body>

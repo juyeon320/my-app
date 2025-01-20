@@ -74,6 +74,7 @@ const loginUser = async (req, res) => {
     req.session.user = {
       email: user.email,
       nickname: user.nickname,
+      profileImage: `/profile/${user.img}` || '/profile/default.jpg', // 프로필 이미지 URL 또는 경로
     };
 
     res.redirect('/memo_list');
@@ -85,7 +86,7 @@ const loginUser = async (req, res) => {
 //
 const my_info = async (req, res) => {
   try {
-    if (!req.session.user) {
+    if (!req.session || !req.session.user) {
       return res.status(401).json({ error: '로그인이 필요합니다.' });
     }
 
@@ -97,7 +98,7 @@ const my_info = async (req, res) => {
     res.status(200).json({
       email: user.email,
       nickname: user.nickname,
-      img: user.img ? `/profile/${user.img}` : null,
+      img: user.img ? `/profile/${user.img}` : `/profile/default.jpg`,
     });
   } catch (err) {
     console.error('사용자 정보 조회 중 오류 발생:', err);
@@ -144,12 +145,12 @@ const look_my_info = async (req, res) => {
 
     // 세션 업데이트
     req.session.user.nickname = nickname || req.session.user.nickname;
-    req.session.user.img = img ? `/profile/${img}` : req.session.user.img;
+    req.session.user.profileImage = img ? `/profile/${img}` : user.img ? `/profile/${user.img}` : '/profile/default.jpg';
 
     res.status(200).json({
       message: '정보 수정 성공',
       nickname: user.nickname,
-      img: img ? `/profile/${img}` : `/profile/${user.img}`,
+      img: img ? `/profile/${img}` : `/profile/default.jpg`,
     });
   } catch (err) {
     console.error('정보 수정 중 오류 발생:', err);
@@ -157,7 +158,7 @@ const look_my_info = async (req, res) => {
   }
 };
 
-
+/*
 const delete_user = async (req, res) => {
   try {
     const { email } = req.body;
@@ -178,6 +179,47 @@ const delete_user = async (req, res) => {
     console.error('회원 탈퇴 중 오류 발생:', err);
     res.status(500).json({ error: '회원 탈퇴에 실패했습니다.' });
   }
-}
+}*/
+
+const delete_user = async (req, res) => {
+  try {
+    // 세션 확인 및 이메일 정보 가져오기
+    if (!req.session || !req.session.user) {
+      return res.status(401).json({ error: '로그인이 필요합니다.' });
+    }
+
+    const email = req.session.user.email;
+
+    // 이메일이 없으면 오류 반환
+    if (!email) {
+      return res.status(400).json({ error: '유효한 이메일 정보가 없습니다.' });
+    }
+
+    // 사용자 조회
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
+    }
+
+    await Memo.destroy({ where: { username: user.nickname } });
+    await Comment.destroy({ where: { username: user.nickname } });
+
+    // 사용자 삭제
+    await user.destroy();
+
+    // 세션 삭제
+    req.session.destroy(err => {
+      if (err) {
+        console.error('세션 종료 중 오류 발생:', err);
+        return res.status(500).json({ error: '세션 종료 중 오류가 발생했습니다.' });
+      }
+      res.status(200).json({ message: '회원 탈퇴가 완료되었습니다.' });
+    });
+  } catch (err) {
+    console.error('회원 탈퇴 중 오류 발생:', err);
+    res.status(500).json({ error: '회원 탈퇴에 실패했습니다.' });
+  }
+};
 
 export { registerUser, loginUser, my_info, updatePw, look_my_info, delete_user };

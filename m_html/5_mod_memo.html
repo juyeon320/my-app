@@ -33,7 +33,11 @@
                 <textarea id="context" name="context" rows="10" required></textarea>
                 <hr class="horizontal-rule"/>      
                 <p class="description">이미지</p>
-                <input type="file" id="memo_img" name="memo_img" accept="image/*">
+                <div class="file-upload-wrapper">
+                    <label for="memo_img" class="custom-file-label">사진업로드</label>
+                    <span id="file-name" class="file-name"></span>
+                    <input type="file" id="memo_img" name="memo_img" accept="image/*" style="display:none;">
+                  </div>
                 <article class="buttons">
                     <button class="button" type="submit">수정하기</button>
                 </article>
@@ -41,6 +45,11 @@
         </article>
     </section>
     <script>
+        document.getElementById('memo_img').addEventListener('change', (event) => {
+            const fileName = event.target.files[0]?.name || '선택된 파일 없음';
+            document.getElementById('file-name').textContent = fileName;
+        });
+
         // 버튼 동작: 내 정보 보기
         document.getElementById('mod_my_btn').addEventListener('click', () => {
             window.location.href = '/my_info';
@@ -66,7 +75,7 @@
         }
 
         // 기존 데이터를 로드하여 폼에 채우기
-        async function loadMemoDetails() {
+        /*async function loadMemoDetails() {
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id'); // URL 파라미터에서 게시물 ID 추출
 
@@ -89,6 +98,98 @@
                 document.getElementById('id').value = memo.id;
                 document.getElementById('title').value = memo.title || '';
                 document.getElementById('context').value = memo.context || '';
+                
+                const memoImgInput = document.getElementById('memo_img');
+                const memoImgPreview = document.createElement('p');
+                
+                if (memo.img) {
+                    memoImgPreview.textContent = '';
+                    const imgPreview = document.createElement('img');
+                    imgPreview.src = memo.img; // 서버에서 이미지 URL
+                    imgPreview.style.width = '100px';
+                    imgPreview.style.height = 'auto';
+                    memoImgInput.parentNode.insertBefore(imgPreview, memoImgInput.nextSibling);
+                }else {
+                    memoImgPreview.textContent = '선택된 파일 없음';
+                }
+                    memoImgInput.parentNode.insertBefore(memoImgPreview, memoImgInput.nextSibling);
+            } catch (err) {
+                console.error('데이터 로드 중 오류 발생:', err);
+                alert('게시물을 불러오는 데 실패했습니다.');
+            }
+        }*/
+
+        async function loadMemoDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id'); // URL 파라미터에서 게시물 ID 추출
+
+            if (!id) {
+                alert('유효한 게시물 ID가 필요합니다.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/mod_memo?id=${encodeURIComponent(id)}`);
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || '게시물을 불러오는 데 실패했습니다.');
+                }
+
+                const { memo } = await response.json();
+
+                // 폼 데이터 채우기
+                document.getElementById('id').value = memo.id;
+                document.getElementById('title').value = memo.title || '';
+                document.getElementById('context').value = memo.context || '';
+
+                // 이미지 처리
+                const memoImgInput = document.getElementById('memo_img');
+                const existingFileNameLabel = document.querySelector('.file-name-label');
+                if (existingFileNameLabel) existingFileNameLabel.remove(); // 기존 파일명 라벨 제거
+
+                const fileNameLabel = document.createElement('span');
+                fileNameLabel.className = 'file-name-label';
+
+                const memoImgPreview = document.querySelector('.image-preview') || document.createElement('div');
+                memoImgPreview.className = 'image-preview';
+                memoImgPreview.innerHTML = ''; // 초기화
+
+                if (memo.img) {
+                    // 기존 이미지가 있을 경우
+                    const fileName = memo.img.split('/').pop(); // 서버에서 파일명 추출
+                    fileNameLabel.textContent = fileName; // 파일명 설정
+                    const imgPreview = document.createElement('img');
+                    imgPreview.src = memo.img; // 서버에서 이미지 URL
+                    imgPreview.style.width = '100px';
+                    imgPreview.style.height = 'auto';
+                    memoImgPreview.appendChild(imgPreview);
+                } else {
+                    // 기존 이미지가 없을 경우
+                    fileNameLabel.textContent = '사진을 추가해 보세요!';
+                }
+
+                memoImgInput.parentNode.insertBefore(fileNameLabel, memoImgInput.nextSibling);
+                memoImgInput.parentNode.insertBefore(memoImgPreview, fileNameLabel.nextSibling);
+
+                // 파일 입력 변경 이벤트
+                memoImgInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        // 새 파일 선택 시 업데이트
+                        fileNameLabel.textContent = file.name; // 파일명 업데이트
+                        memoImgPreview.innerHTML = ''; // 기존 미리보기 초기화
+                        const newImgPreview = document.createElement('img');
+                        newImgPreview.src = URL.createObjectURL(file);
+                        newImgPreview.style.width = '100px';
+                        newImgPreview.style.height = 'auto';
+                        memoImgPreview.appendChild(newImgPreview);
+                    } else {
+                        // 파일 선택 취소 시 메시지 표시
+                        fileNameLabel.textContent = '선택된 사진이 없습니다';
+                        memoImgPreview.innerHTML = ''; // 미리보기 초기화
+                    }
+                });
             } catch (err) {
                 console.error('데이터 로드 중 오류 발생:', err);
                 alert('게시물을 불러오는 데 실패했습니다.');
@@ -96,13 +197,12 @@
         }
 
 
-
+        
         document.getElementById('memo-mod-form').addEventListener('submit', async (event) => {
             event.preventDefault();
 
             const formData = new FormData(event.target);
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get('id'); 
+            const id = new URLSearchParams(window.location.search).get('id'); 
 
             if (!formData.has('id')) {
                 formData.append('id', id);
