@@ -111,7 +111,7 @@ router.get('/mod_pw', (req, res) => {
 });
 // 비밀번호 수정 데이터 처리
 router.patch('/mod_pw', updatePw);
-
+//아 도커 
 //////////회원탈퇴///////////
 router.delete('/delete_user', isAuthenticated, delete_user);
 ////조ㅎ아요
