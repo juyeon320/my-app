@@ -94,21 +94,6 @@ router.delete('/delete_comment', isAuthenticated, deleteComment);
 
 router.patch('/edit_comment', isAuthenticated, updateComment);
 
-// 백엔드 예제 (Express.js)
-/*router.get('/api/my_info', isAuthenticated, (req, res) => {
-  const user = req.user; // 세션에서 사용자 정보 가져오기
-  if (!user) {
-      return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  res.json({
-      username: user.username,
-      profileImg: user.profileImg || '/profile/default.png', // 기본 이미지 설정
-  });
-});*/
-
-
-
 //////////7. 내 정보 보기////////
 // 페이지 서빙
 router.get('/api/my_info', isAuthenticated, my_info);
